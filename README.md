@@ -45,8 +45,22 @@ pip install -r requirements.txt
 ```
 
 5. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Fill in your OKX API credentials and other configuration settings
+   ```bash
+   # Copy the sample environment file
+   cp .env.sample .env
+   
+   # Edit the .env file with your credentials
+   nano .env  # or use your preferred text editor
+   ```
+   
+   Required environment variables:
+   - `OKX_API_KEY`: Your OKX API key
+   - `OKX_SECRET`: Your OKX API secret
+   - `OKX_PASSPHRASE`: Your OKX API passphrase
+   - `DRY_RUN`: Set to `True` for testing, `False` for live trading
+   - `SYMBOL`: Trading pair (e.g., `BTC/USDT`)
+   - `TIMEFRAME`: Trading timeframe (e.g., `1h`)
+   - `TRADE_SIZE`: Amount to trade per order
 
 ## Running the Bot
 
