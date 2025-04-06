@@ -16,16 +16,20 @@ load_dotenv(dotenv_path=env_path, encoding='utf-8')
 # Trading Configuration
 TRADING_CONFIG = {
     'DRY_RUN': os.getenv('DRY_RUN', 'True').lower() == 'true',
-    'SYMBOL': os.getenv('SYMBOL', 'BTC/USDT'),
-    'TIMEFRAME': os.getenv('TIMEFRAME', '1h'),
+    'SYMBOL': 'BTC/USDT',          # Trading pair
+    'TIMEFRAME': '15m',            # Timeframe for candlestick data
     'TRADE_SIZE': float(os.getenv('TRADE_SIZE', '0.001')),
+    'MIN_USDT_BALANCE': 10,        # Minimum USDT balance required to trade
+    'MIN_TRADE_AMOUNT': 0.001,     # Minimum trade amount per order
+    'MIN_PROFIT_PERCENTAGE': 2.0,  # Minimum profit percentage to take profit
+    'STOP_LOSS_PERCENTAGE': -2.0,  # Maximum loss percentage before stop loss
 }
 
 # API Configuration
 API_CONFIG = {
-    'API_KEY': os.getenv('OKX_API_KEY'),
-    'SECRET': os.getenv('OKX_SECRET'),
-    'PASSPHRASE': os.getenv('OKX_PASSPHRASE'),
+    'API_KEY': 'your_api_key',
+    'SECRET': 'your_secret_key',
+    'PASSPHRASE': 'your_passphrase',
 }
 
 # Logging Configuration
