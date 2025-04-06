@@ -61,4 +61,4 @@ INDICATOR_CONFIG = {
     }
 }
 
-# ... (các config khác giữ nguyên như cũ) 
+# ... (other configurations remain unchanged)
