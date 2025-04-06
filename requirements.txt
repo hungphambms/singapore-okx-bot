@@ -1,0 +1,36 @@
+# Exchange API
+ccxt>=4.2.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Technical Analysis
+ta-lib>=0.4.0
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# Date and Time
+python-dateutil>=2.8.2
+
+# Path handling
+pathlib>=1.0.0
+
+# Async Support
+asyncio>=3.4.3
+aiohttp>=3.8.0
+
+# WebSocket
+websockets>=10.0
+
+# Notifications
+python-telegram-bot>=20.0  # For Telegram notifications
+discord.py>=2.0.0          # For Discord notifications
+
+# Testing
+pytest>=7.0.0
+pytest-asyncio>=0.20.0
+
+# Monitoring & Performance
+psutil>=5.9.0
