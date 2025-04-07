@@ -4,7 +4,28 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file in project root
 env_path = Path(__file__).parent.parent / '.env'
-load_dotenv(dotenv_path=env_path, encoding='utf-8')
+print(f"\nLooking for .env file at: {env_path}")
+print(f"File exists: {env_path.exists()}")
+
+if env_path.exists():
+    # Print the contents of .env file (first few characters only)
+    print("\nContents of .env file:")
+    with open(env_path, 'r') as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key = line.split('=')[0].strip()
+                value = line.split('=')[1].strip()
+                print(f"{key}: {value[:8]}...")
+
+# Try to load .env file
+load_dotenv(dotenv_path=env_path, encoding='utf-8', override=True)
+
+# Debug: Print environment variables
+print("\nEnvironment variables after loading:")
+print(f"OKX_API_KEY: {os.getenv('OKX_API_KEY', 'Not found')[:8]}..." if os.getenv('OKX_API_KEY') else "Not found")
+print(f"OKX_SECRET: {os.getenv('OKX_SECRET', 'Not found')[:8]}..." if os.getenv('OKX_SECRET') else "Not found")
+print(f"OKX_PASSPHRASE: {os.getenv('OKX_PASSPHRASE', 'Not found')[:8]}..." if os.getenv('OKX_PASSPHRASE') else "Not found")
+print(f"OKX_TESTNET: {os.getenv('OKX_TESTNET', 'Not found')}")
 
 # Configuration file that manages all settings for the trading bot
 # Contains:
@@ -27,9 +48,10 @@ TRADING_CONFIG = {
 
 # API Configuration
 API_CONFIG = {
-    'API_KEY': 'your_api_key',
-    'SECRET': 'your_secret_key',
-    'PASSPHRASE': 'your_passphrase',
+    'API_KEY': os.getenv('OKX_API_KEY'),
+    'SECRET': os.getenv('OKX_SECRET'),
+    'PASSWORD': os.getenv('OKX_PASSPHRASE'),
+    'TESTNET': os.getenv('OKX_TESTNET', 'False').lower() == 'true',
 }
 
 # Logging Configuration

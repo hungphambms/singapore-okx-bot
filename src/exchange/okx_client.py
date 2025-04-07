@@ -7,8 +7,12 @@ class OKXClient:
         self.exchange = ccxt.okx({
             'apiKey': API_CONFIG['API_KEY'],
             'secret': API_CONFIG['SECRET'],
-            'passphrase': API_CONFIG['PASSPHRASE'],
+            'password': API_CONFIG['PASSWORD'],
             'enableRateLimit': True,
+            'testnet': API_CONFIG['TESTNET'],
+            'options': {
+                'defaultType': 'spot',
+            }
         })
 
     def fetch_ohlcv_data(self):
