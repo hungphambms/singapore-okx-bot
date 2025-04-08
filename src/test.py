@@ -28,7 +28,8 @@ def test_okx_connection():
             'options': {
                 'defaultType': 'spot',
             },
-            'testnet': True  # Enable testnet mode
+            "hostname": API_CONFIG['HOSTNAME'],
+            'testnet': API_CONFIG['TESTNET']  # Enable testnet mode
         })
         
         # Test connection by fetching account balance

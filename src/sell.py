@@ -73,31 +73,64 @@ def execute_sell_strategy():
 
 def execute_stop_loss():
     """
-    Thực hiện lệnh cắt lỗ
+    Execute the stop loss strategy
+    Returns:
+        bool: True if stop loss should be triggered, False otherwise
     """
     try:
         client = OKXClient()
         symbol = TRADING_CONFIG['SYMBOL']
         
+        # 1. Check current position
         position = client.get_position(symbol)
         if not position or float(position['size']) <= 0:
+            logger.warning(f"No position to apply stop loss in {symbol}")
             return False
             
         position_size = float(position['size'])
         entry_price = float(position['entryPrice'])
         
-        # 2. Lấy giá hiện tại
+        # 2. Get current market price
         ohlcv = client.fetch_ohlcv_data()
-        current_price = ohlcv[-1][4]  # Giá đóng cửa của nến mới nhất
+        current_price = ohlcv[-1][4]  # Close price of the latest candle
         
-        # 3. Kiểm tra điều kiện cắt lỗ
-        stop_loss_percentage = TRADING_CONFIG.get('STOP_LOSS_PERCENTAGE', 5.0)
-        if ((current_price - entry_price) / entry_price) * 100 > stop_loss_percentage:
-            logger.info(f"Current loss reaching stop loss threshold: {stop_loss_percentage}%")
+        # 3. Check stop loss conditions
+        stop_loss_percentage = TRADING_CONFIG.get('STOP_LOSS_PERCENTAGE', -5.0)
+        loss_percentage = ((current_price - entry_price) / entry_price) * 100
+        
+        if loss_percentage <= stop_loss_percentage:
+            logger.info(f"Current loss ({loss_percentage:.2f}%) reaching stop loss threshold: {stop_loss_percentage}%")
             return True
             
         return False
         
     except Exception as e:
         logger.error(f"Error executing stop loss strategy: {str(e)}")
-        return False 
+        return False
+
+def execute_sell_decision():
+    """
+    Execute the sell decision based on both take profit and stop loss strategies
+    Returns:
+        bool: True if sell order was successful, False otherwise
+    """
+    try:
+        # First check if stop loss should be triggered
+        if execute_stop_loss():
+            logger.info("Stop loss triggered, executing sell order")
+            return execute_sell_strategy()
+        
+        # If not, check if take profit should be triggered
+        return execute_sell_strategy()
+        
+    except Exception as e:
+        logger.error(f"Error executing sell decision: {str(e)}")
+        return False
+
+if __name__ == "__main__":
+    # Example usage
+    success = execute_sell_decision()
+    if success:
+        print("Sell order executed successfully!")
+    else:
+        print("Failed to execute sell order or no position to sell") 

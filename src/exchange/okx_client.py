@@ -10,9 +10,7 @@ class OKXClient:
             'password': API_CONFIG['PASSWORD'],
             'enableRateLimit': True,
             'testnet': API_CONFIG['TESTNET'],
-            'options': {
-                'defaultType': 'spot',
-            }
+            'hostname': API_CONFIG['HOSTNAME'],
         })
 
     def fetch_ohlcv_data(self):
@@ -48,12 +46,38 @@ class OKXClient:
             float: Available balance
         """
         try:
+            # Fetch the balance
             balance = self.exchange.fetch_balance()
-            available = balance['free'][currency]
+            
+            # Debug: Log the structure of the balance response
+            logger.debug(f"Balance response keys: {list(balance.keys())}")
+            
+            # Check if 'free' exists in the balance response
+            if 'free' not in balance:
+                logger.error(f"'free' key not found in balance response. Available keys: {list(balance.keys())}")
+                # Try to find the currency in the main balance structure
+                if currency in balance:
+                    logger.info(f"Found {currency} directly in balance structure")
+                    return float(balance[currency])
+                else:
+                    logger.error(f"Currency {currency} not found in balance structure")
+                    return 0.0
+            
+            # Check if the currency exists in the 'free' balance
+            if currency not in balance['free']:
+                logger.error(f"Currency {currency} not found in 'free' balance. Available currencies: {list(balance['free'].keys())}")
+                return 0.0
+            
+            # Get the available balance
+            available = float(balance['free'][currency])
             logger.info(f"Available {currency} balance: {available}")
             return available
+            
         except Exception as e:
             logger.error(f"Error fetching balance: {str(e)}")
+            # Log more details about the error
+            logger.error(f"Error type: {type(e).__name__}")
+            logger.error(f"Error details: {str(e)}")
             raise
 
     def place_buy_order(self, symbol, amount, price=None):

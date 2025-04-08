@@ -28,8 +28,42 @@ def execute_buy_strategy():
         client = OKXClient()
         symbol = TRADING_CONFIG['SYMBOL']  # e.g., 'BTC/USDT'
         
-        # 1. Check USDT balance
-        usdt_balance = client.get_balance('USDT')
+        # 1. Check USDT balance with better error handling
+        try:
+            # Debug: Print the client configuration
+            logger.info(f"Using OKX API with testnet: {TRADING_CONFIG.get('TESTNET', False)}")
+            logger.info(f"Using hostname: {TRADING_CONFIG.get('HOSTNAME', 'eea.okx.com')}")
+            
+            # Try to get the balance with more detailed error handling
+            usdt_balance = client.get_balance('USDT')
+            logger.info(f"Successfully retrieved USDT balance: {usdt_balance}")
+            
+            # If USDT balance is insufficient, try USDC
+            if usdt_balance < TRADING_CONFIG.get('MIN_USDT_BALANCE', 10):
+                logger.info("USDT balance insufficient, trying USDC...")
+                usdc_balance = client.get_balance('USDC')
+                logger.info(f"USDC balance: {usdc_balance}")
+                
+                # If USDC balance is sufficient, use it instead
+                if usdc_balance >= TRADING_CONFIG.get('MIN_USDT_BALANCE', 10):
+                    logger.info(f"Using USDC balance instead of USDT: {usdc_balance}")
+                    usdt_balance = usdc_balance  # Use USDC balance as if it were USDT
+                else:
+                    logger.warning(f"Insufficient USDT and USDC balance: USDT={usdt_balance}, USDC={usdc_balance}")
+                    return False
+        except Exception as balance_error:
+            logger.error(f"Detailed balance error: {str(balance_error)}")
+            # Try to get the raw balance for debugging
+            try:
+                raw_balance = client.exchange.fetch_balance()
+                logger.info(f"Raw balance structure: {raw_balance.keys()}")
+                if 'free' in raw_balance:
+                    logger.info(f"Available currencies: {raw_balance['free'].keys()}")
+                return False
+            except Exception as raw_error:
+                logger.error(f"Error fetching raw balance: {str(raw_error)}")
+                return False
+            
         if usdt_balance < TRADING_CONFIG.get('MIN_USDT_BALANCE', 10):
             logger.warning(f"Insufficient USDT balance: {usdt_balance}")
             return False

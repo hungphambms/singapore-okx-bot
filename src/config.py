@@ -52,6 +52,7 @@ API_CONFIG = {
     'SECRET': os.getenv('OKX_SECRET'),
     'PASSWORD': os.getenv('OKX_PASSPHRASE'),
     'TESTNET': os.getenv('OKX_TESTNET', 'False').lower() == 'true',
+    'HOSTNAME': os.getenv('OKX_HOSTNAME', 'eea.okx.com'),
 }
 
 # Logging Configuration
